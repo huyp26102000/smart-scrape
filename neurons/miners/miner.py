@@ -240,72 +240,71 @@ class StreamMiner(ABC):
     ) -> ScraperStreamingSynapse: ...
 
     def run(self):
-        print("edited")
-        # if not self.subtensor.is_hotkey_registered(
-        #     netuid=self.config.netuid,
-        #     hotkey_ss58=self.wallet.hotkey.ss58_address,
-        # ):
-        #     bt.logging.error(
-        #         f"Wallet: {self.wallet} is not registered on netuid {self.config.netuid}"
-        #         f"Please register the hotkey using `btcli s register --netuid 18` before trying again"
-        #     )
-        #     exit()
-        # bt.logging.info(
-        #     f"Serving axon {ScraperStreamingSynapse} on network: {self.config.subtensor.chain_endpoint} with netuid: {self.config.netuid}"
-        # )
-        # self.axon.serve(netuid=self.config.netuid, subtensor=self.subtensor)
-        # bt.logging.info(f"Starting axon server on port: {self.config.axon.port}")
-        # self.axon.start()
-        # self.last_epoch_block = self.subtensor.get_current_block()
-        # bt.logging.info(f"Miner starting at block: {self.last_epoch_block}")
-        # bt.logging.info(f"Starting main loop")
-        # step = 0
-        # try:
-        #     while not self.should_exit:
-        #         start_epoch = time.time()
+        if not self.subtensor.is_hotkey_registered(
+            netuid=self.config.netuid,
+            hotkey_ss58=self.wallet.hotkey.ss58_address,
+        ):
+            bt.logging.error(
+                f"Wallet: {self.wallet} is not registered on netuid {self.config.netuid}"
+                f"Please register the hotkey using `btcli s register --netuid 18` before trying again"
+            )
+            exit()
+        bt.logging.info(
+            f"Serving axon {ScraperStreamingSynapse} on network: {self.config.subtensor.chain_endpoint} with netuid: {self.config.netuid}"
+        )
+        self.axon.serve(netuid=self.config.netuid, subtensor=self.subtensor)
+        bt.logging.info(f"Starting axon server on port: {self.config.axon.port}")
+        self.axon.start()
+        self.last_epoch_block = self.subtensor.get_current_block()
+        bt.logging.info(f"Miner starting at block: {self.last_epoch_block}")
+        bt.logging.info(f"Starting main loop")
+        step = 0
+        try:
+            while not self.should_exit:
+                start_epoch = time.time()
 
-        #         # --- Wait until next epoch.
-        #         current_block = self.subtensor.get_current_block()
-        #         while (
-        #             current_block - self.last_epoch_block
-        #             < self.config.miner.blocks_per_epoch
-        #         ):
-        #             # --- Wait for next bloc.
-        #             time.sleep(1)
-        #             current_block = self.subtensor.get_current_block()
-        #             # --- Check if we should exit.
-        #             if self.should_exit:
-        #                 break
+                # --- Wait until next epoch.
+                current_block = self.subtensor.get_current_block()
+                while (
+                    current_block - self.last_epoch_block
+                    < self.config.miner.blocks_per_epoch
+                ):
+                    # --- Wait for next bloc.
+                    time.sleep(1)
+                    current_block = self.subtensor.get_current_block()
+                    # --- Check if we should exit.
+                    if self.should_exit:
+                        break
 
-        #         # --- Update the metagraph with the latest network state.
-        #         self.last_epoch_block = self.subtensor.get_current_block()
+                # --- Update the metagraph with the latest network state.
+                self.last_epoch_block = self.subtensor.get_current_block()
 
-        #         metagraph = self.subtensor.metagraph(
-        #             netuid=self.config.netuid,
-        #             lite=True,
-        #             block=self.last_epoch_block,
-        #         )
-        #         log = (
-        #             f"Step:{step} | "
-        #             f"Block:{metagraph.block.item()} | "
-        #             f"Stake:{metagraph.S[self.my_subnet_uid]} | "
-        #             f"Rank:{metagraph.R[self.my_subnet_uid]} | "
-        #             f"Trust:{metagraph.T[self.my_subnet_uid]} | "
-        #             f"Consensus:{metagraph.C[self.my_subnet_uid] } | "
-        #             f"Incentive:{metagraph.I[self.my_subnet_uid]} | "
-        #             f"Emission:{metagraph.E[self.my_subnet_uid]}"
-        #         )
-        #         bt.logging.info(log)
+                metagraph = self.subtensor.metagraph(
+                    netuid=self.config.netuid,
+                    lite=True,
+                    block=self.last_epoch_block,
+                )
+                log = (
+                    f"Step:{step} | "
+                    f"Block:{metagraph.block.item()} | "
+                    f"Stake:{metagraph.S[self.my_subnet_uid]} | "
+                    f"Rank:{metagraph.R[self.my_subnet_uid]} | "
+                    f"Trust:{metagraph.T[self.my_subnet_uid]} | "
+                    f"Consensus:{metagraph.C[self.my_subnet_uid] } | "
+                    f"Incentive:{metagraph.I[self.my_subnet_uid]} | "
+                    f"Emission:{metagraph.E[self.my_subnet_uid]}"
+                )
+                bt.logging.info(log)
 
-        #         step += 1
+                step += 1
 
-        # except KeyboardInterrupt:
-        #     self.axon.stop()
-        #     bt.logging.success("Miner killed by keyboard interrupt.")
-        #     exit()
+        except KeyboardInterrupt:
+            self.axon.stop()
+            bt.logging.success("Miner killed by keyboard interrupt.")
+            exit()
 
-        # except Exception as e:
-        #     bt.logging.error(traceback.format_exc())
+        except Exception as e:
+            bt.logging.error(traceback.format_exc())
 
     def run_in_background_thread(self):
         if not self.is_running:
