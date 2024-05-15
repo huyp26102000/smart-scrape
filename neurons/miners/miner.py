@@ -409,6 +409,7 @@ def get_valid_hotkeys(config):
 
 
 if __name__ == "__main__":
-    with StreamingTemplateMiner():
-        while True:
-            time.sleep(1)
+    print("test")
+    # with StreamingTemplateMiner():
+    #     while True:
+    #         time.sleep(1)
