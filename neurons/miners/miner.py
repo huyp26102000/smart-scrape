@@ -29,13 +29,14 @@ from datura.services.twitter_api_wrapper import TwitterAPIClient
 from neurons.miners.scraper_miner import ScraperMiner
 from neurons.miners.search_miner import SearchMiner
 
-OpenAI.api_key = os.environ.get("OPENAI_API_KEY")
+OpenAI.api_key = os.getenv("OPENAI_API_KEY")
 if not OpenAI.api_key:
     raise ValueError(
         "Please set the OPENAI_API_KEY environment variable. See here: https://github.com/surcyf123/smart-scrape/blob/main/docs/env_variables.md"
     )
-
-TWITTER_BEARER_TOKEN = os.environ.get("TWITTER_BEARER_TOKEN")
+print(OpenAI.api_key)
+TWITTER_BEARER_TOKEN = os.getenv("TWITTER_BEARER_TOKEN")
+print(TWITTER_BEARER_TOKEN)
 if not TWITTER_BEARER_TOKEN:
     raise ValueError(
         "Please set the TWITTER_BEARER_TOKEN environment variable. See here: https://github.com/surcyf123/smart-scrape/blob/main/docs/env_variables.md"
